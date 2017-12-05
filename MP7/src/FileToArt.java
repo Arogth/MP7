@@ -1,4 +1,6 @@
 
 public class FileToArt {
-	int temp;
+	public static void main(String[] args) {
+		
+	}
 }
