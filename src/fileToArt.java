@@ -1,4 +1,4 @@
 
 public class fileToArt {
-	int temp = 0;
+	int temp = 1;
 }
