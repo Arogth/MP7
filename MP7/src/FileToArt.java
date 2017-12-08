@@ -1,3 +1,4 @@
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,30 +11,16 @@ public class FileToArt {
 	public static void main(String... args) throws IOException{
 		
         FileToArt binary = new FileToArt();
-        byte[] bytes = binary.readFile("input.jpg");
+        byte[] bytes = binary.readFile(FILE_NAME);
         
-        for (int i = 0; i < bytes.length; i++) {
-        		try {
-        			System.out.println(bytes[i]);
-        		} catch(NullPointerException e) {
-        			System.out.println("!!!");
-        		}
-        }
+        System.out.println(bytes.length/3 + " " + Math.sqrt(bytes.length));
         
-        System.out.println(bytes.length);
+        int size = (int)((Math.sqrt(bytes.length)) + 1);
 		
-		BufferedImage img = null;
+		BufferedImage img = new BufferedImage((int)(size/2 + 1), size, BufferedImage.TYPE_INT_ARGB);
 	    File f = null;
 	    
-	    try{
-	      f = new File(FILE_NAME);
-	      img = ImageIO.read(f);
-	    }catch(IOException e){
-	      System.out.println(e);
-	    }
-	    
-	    System.out.println(img.getHeight() * img.getWidth());
-	    System.out.println((img.getHeight() * img.getWidth())/(bytes.length - 1));
+	    System.out.println((int)(size/2 + 1) * size);
 	    
 	    int a = 0;
 	    int r = 0;
@@ -43,52 +30,55 @@ public class FileToArt {
 	    int temp;
 	    
 	    int count = 0;
-	    int posCounter = 0;
+	    
+	    boolean endFound = false;
 	    
 	    for (int i = 0; i < img.getWidth(); i++) {
 	    		for (int j = 0; j < img.getHeight(); j++) {
-	    			temp = img.getRGB(i, j);
-
-	    		    	a = (temp>>24) & 0xff;
-	    		    r = (temp>>16) & 0xff;
-	    		    g = (temp>>8) & 0xff;
-	    		    b = temp & 0xff;
-	    		    
-	    		    if (count < bytes.length && posCounter%((img.getHeight() * img.getWidth())/(bytes.length - 1)) == 0) {
+		    		
+	    			a = 255;
+	    		    if (count < bytes.length) {
+	    		    		b = 255;
 	    		    		r = (int)bytes[count];
-	    		    		g = 0;
-	    		    		b = 0;
-	    		    		
 	    		    		count++;
+	    		    		if (count < bytes.length) {
+	    		    			g = (int)bytes[count];
+		    		    		count++;
+	    		    		} else {
+	    		    			b = 128;
+	    		    			g = 0;
+		    		    		}
+	    		    } else if (!endFound) {
+	    		    		System.out.println(count);
+	    		    		endFound = true;
+	    		    } else {
+		    			b = 0;
+		    			r = 255;
+		    			g = 255;
 	    		    }
-	    			posCounter++;
 	    		    
 			    temp = (a<<24) | (r<<16) | (g<<8) | b;
+	    		    
+	    		    		System.out.println(a + " " + r + " " + g + " " + b);
 			    
 			    img.setRGB(i, j, temp);
 	    		}
 	    }
 	    
 	    try{
-	        f = new File(OUTPUT_FILE_NAME);
-	        ImageIO.write(img, "jpg", f);
+	        ImageIO.write(img, "gif", new File(OUTPUT_FILE_NAME));
 	      }catch(IOException e){
 	        System.out.println(e);
 	      }
 	    
-	    System.out.println("Done!");
+	    System.out.println("Done! " + bytes.length + " " + img);
 	}
 	
-	final static String FILE_NAME = "input.jpg";
-	  final static String OUTPUT_FILE_NAME = "output.jpg";
+	final static String FILE_NAME = "MP7.zip";
+	  final static String OUTPUT_FILE_NAME = "sample.gif";
 	  
 	  byte[] readFile(String aFileName) throws IOException {
 	    Path path = Paths.get(aFileName);
 	    return Files.readAllBytes(path);
-	  }
-	  
-	  void writeFile(byte[] aBytes, String aFileName) throws IOException {
-	    Path path = Paths.get(aFileName);
-	    Files.write(path, aBytes);
 	  }
 }
