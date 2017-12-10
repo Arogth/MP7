@@ -1,4 +1,3 @@
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,30 +7,24 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class ArtToFile {
+	final static String FILE_NAME = "output.gif";
+	final static String OUTPUT_FILE_NAME = "file.zip";
+	
 	public static void main(String... args) throws IOException{
 		
 		BufferedImage img = null;
 	    File f = null;
 
-	    //read image
 	    try{
-	      f = new File("sample.gif");
+	      f = new File(FILE_NAME);
 	      img = ImageIO.read(f);
 	    }catch(IOException e){
 	      System.out.println(e);
 	    }
 
-	    //get image width and height
 	    int width = img.getWidth();
 	    int height = img.getHeight();
 
-	    /**
-	     * Since, Sample.jpg is a single pixel image so, we will
-	     * not be using the width and height variable in this
-	     * project.
-	     */
-
-	    //get pixel value
 	    int p = img.getRGB(0,0);
 
 	    int a = (p>>24) & 0xff;
@@ -62,23 +55,12 @@ public class ArtToFile {
 		temp = 0;
 		
     		for (int i = 0; i < pictureStorage.length && !endReached; i++) {
-    				
-    			System.out.println((pictureStorage[i] & 0xff) + " " + bytesEnd);
-    			System.out.println((pictureStorage[i] & 0xff) + "\t" 
-    					+ (pictureStorage[i] >> 16 & 0xff) + "\t" 
-    					+ (pictureStorage[i] >> 8 & 0xff));
-    				
-    			if ((pictureStorage[i] == pictureStorage[i + 1] 
-    					&& (pictureStorage[i] & 0xff) == 128)) {
-    				System.out.println("end state entered" + pictureStorage[i + 1]);
-    				
-    				bytesEnd++;
-    				
-    				break;
-    			} else if ((pictureStorage[i] & 0xff) == 0) {
+    			
+    			if ((pictureStorage[i] & 0xff) == 2) {
+    				bytesEnd--;
     				break;
     			} else {
-    				bytesEnd+=2;
+    				bytesEnd++;
     			}
     			
     			System.out.println("looping!");
@@ -87,29 +69,19 @@ public class ArtToFile {
 		bytes = new byte[bytesEnd];
 		System.out.println(bytes.length);
 	    
-		/*
 	    int count = 0;
 	    
 	    for (int i = 0; i < img.getWidth(); i++) {
 	    		for (int j = 0; j < img.getHeight(); j++) {
+	    			
 	    			p = img.getRGB(i, j);
-	    		    
-			    a = p>>24 & 0xff;
-	    			r = p>>16 & 0xff;
 	    			g = p>>8 & 0xff;
 	    			b = p & 0xff;;
 	    		    
 	    		    if (count < bytes.length) 
 	    		    {
-			    			bytes[count] = (byte)r;
-		    		    		count++;
-		    		    		
-		    		    	if (count < bytes.length) 
-		    		    	{
-		    		    		bytes[count] = (byte)g;
-			    			count++;
-			    		}
-		    		    	
+			    		bytes[count] = (byte)(g & 0xff);
+		    		    	count++;	
 	    		    } 
 	    		    else 
 	    		    {
@@ -120,21 +92,15 @@ public class ArtToFile {
 	    }
 		
 	for (int i = 0; i < bytes.length; i++) {
-		System.out.println(Integer.toBinaryString(bytes[i]));
+		System.out.println(bytes[i]);
 	}
-		
-		/*
 		
 		ArtToFile binary = new ArtToFile();
 	    
 	    binary.writeFile(bytes, OUTPUT_FILE_NAME);
 	    
 	    System.out.println("Done!");
-	    */
 	}
-	
-	final static String FILE_NAME = "output.jpg";
-	final static String OUTPUT_FILE_NAME = "mp7.zip";
 	  
   	void writeFile(byte[] aBytes, String aFileName) throws IOException {
   		Path path = Paths.get(aFileName);
