@@ -44,7 +44,6 @@ public class ArtToFile {
 		byte[] bytes;
 		
 		int bytesEnd = 0;
-		boolean endReached = false;
 		
 		int temp = 0;
 		
@@ -60,15 +59,24 @@ public class ArtToFile {
 		
 		temp = 0;
 		
-    		for (int i = 0; i < pictureStorage.length && !endReached; i++) {
+    		for (int i = 0; i < pictureStorage.length; i++) {
     			
-    			if (((pictureStorage[i] >> 16) & 0xff) == 2) {
+    			if (((pictureStorage[i] >> 24) & 0xff) == 2) {
     				bytesEnd--;
+    				if (((pictureStorage[i-1] >> 24) & 0xff) == 192){
+    					bytesEnd--;
+    				}
+    				if (((pictureStorage[i-1] >> 24) & 0xff) == 255){
+    					bytesEnd-=2;
+    				}
     				break;
     			} else {
     				bytesEnd++;
-    				if (((pictureStorage[i] >> 16) & 0xff) == 64) {
+    				if (((pictureStorage[i] >> 24) & 0xff) == 192) {
     					bytesEnd++;
+    				}
+    				if (((pictureStorage[i] >> 24) & 0xff) == 255) {
+    					bytesEnd+=2;
     				}
     			}
     			
@@ -93,8 +101,13 @@ public class ArtToFile {
 			    		bytes[count] = (byte)(g & 0xff);
 		    		    	count++;	
 		    		    	
-		    		    	if (r == 64) {
+		    		    	if (count < bytes.length) {
 		    		    		bytes[count] = (byte)(b & 0xff);
+			    		    	count++;	
+		    		    	}
+		    		    	
+		    		    	if (count < bytes.length) {
+		    		    		bytes[count] = (byte)(r & 0xff);
 			    		    	count++;	
 		    		    	}
 	    		    } 

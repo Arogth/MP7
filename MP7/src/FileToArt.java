@@ -13,13 +13,14 @@ public class FileToArt {
 	  
 	public static void main(String... args) throws IOException{
 		
-		System.out.print("please enter the name of the output, including extension: ");
+		System.out.print("please enter the name of the input, including extension: ");
 		
 		Scanner input = new Scanner(System.in);
 		
 		FILE_NAME = input.nextLine();
 		
 		input.close();
+		
         FileToArt binary = new FileToArt();
         byte[] bytes = binary.readFile(FILE_NAME);
         
@@ -27,9 +28,9 @@ public class FileToArt {
         
         int size = (int)((Math.sqrt(bytes.length)) + 1);
 		
-		BufferedImage img = new BufferedImage((size/2 + 1), size, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage((size/3 + 1), size, BufferedImage.TYPE_INT_ARGB);
 	    
-//	    System.out.println((int)(size/2 + 1) * size);
+//	    System.out.println((int)(size/3 + 1) * size);
 	    
 	    int a = 0;
 	    int r = 0;
@@ -51,12 +52,17 @@ public class FileToArt {
 	    		    b = 0;
 	    		    
 	    		    if (count < bytes.length) {
-	    		    		r = 8;
+	    		    		a = 128;
 	    		    		g = (int)(bytes[count] & 0xff);
 		    		    	count++;
 		    		    	if (count < bytes.length) {
-		    		    		r = 64;
+		    		    		a = 192;
 		    		    		b = (int)(bytes[count] & 0xff);
+		    		    		count++;
+		    		    	}
+		    		    	if (count < bytes.length) {
+		    		    		a = 255;
+		    		    		r = (int)(bytes[count] & 0xff);
 		    		    		count++;
 		    		    	}
 		    		    		
@@ -65,7 +71,7 @@ public class FileToArt {
 	    		    		endFound = true;
 	    		    } else {
 		    			b = 8;
-		    			r = 2;
+		    			a = 2;
 		    			g = 8;
 	    		    }
 	    		    
