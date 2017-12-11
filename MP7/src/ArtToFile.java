@@ -3,14 +3,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class ArtToFile {
-	final static String FILE_NAME = "output.gif";
-	final static String OUTPUT_FILE_NAME = "file.zip";
+	final static String FILE_NAME = "output.png";
+	static String OUTPUT_FILE_NAME = "default.gif";
 	
 	public static void main(String... args) throws IOException{
+		
+		System.out.print("please enter the name of the output, including extension: ");
+		
+		Scanner input = new Scanner(System.in);
+		
+		OUTPUT_FILE_NAME = input.nextLine();
+		
+		input.close();
 		
 		BufferedImage img = null;
 	    File f = null;
@@ -22,9 +31,6 @@ public class ArtToFile {
 	      System.out.println(e);
 	    }
 
-	    int width = img.getWidth();
-	    int height = img.getHeight();
-
 	    int p = img.getRGB(0,0);
 
 	    int a = (p>>24) & 0xff;
@@ -32,7 +38,7 @@ public class ArtToFile {
 	    int g = (p>>8) & 0xff;
 	    int b = p & 0xff;
 	    
-	    System.out.println(a + " " + r + " " + g + " " + b + " " + width + " " + height);
+//	    System.out.println(a + " " + r + " " + g + " " + b + " " + width + " " + height);
 		
 		
 		byte[] bytes;
@@ -56,18 +62,21 @@ public class ArtToFile {
 		
     		for (int i = 0; i < pictureStorage.length && !endReached; i++) {
     			
-    			if ((pictureStorage[i] & 0xff) == 2) {
+    			if (((pictureStorage[i] >> 16) & 0xff) == 2) {
     				bytesEnd--;
     				break;
     			} else {
     				bytesEnd++;
+    				if (((pictureStorage[i] >> 16) & 0xff) == 64) {
+    					bytesEnd++;
+    				}
     			}
     			
-    			System.out.println("looping!");
+//    			System.out.println("looping!");
 		}
 		
 		bytes = new byte[bytesEnd];
-		System.out.println(bytes.length);
+//		System.out.println(bytes.length);
 	    
 	    int count = 0;
 	    
@@ -75,6 +84,7 @@ public class ArtToFile {
 	    		for (int j = 0; j < img.getHeight(); j++) {
 	    			
 	    			p = img.getRGB(i, j);
+    				r = p>>16 & 0xff;
 	    			g = p>>8 & 0xff;
 	    			b = p & 0xff;;
 	    		    
@@ -82,6 +92,11 @@ public class ArtToFile {
 	    		    {
 			    		bytes[count] = (byte)(g & 0xff);
 		    		    	count++;	
+		    		    	
+		    		    	if (r == 64) {
+		    		    		bytes[count] = (byte)(b & 0xff);
+			    		    	count++;	
+		    		    	}
 	    		    } 
 	    		    else 
 	    		    {
@@ -91,9 +106,9 @@ public class ArtToFile {
 	    		}
 	    }
 		
-	for (int i = 0; i < bytes.length; i++) {
-		System.out.println(bytes[i]);
-	}
+//	for (int i = 0; i < bytes.length; i++) {
+//		System.out.println(bytes[i]);
+//	}
 		
 		ArtToFile binary = new ArtToFile();
 	    
