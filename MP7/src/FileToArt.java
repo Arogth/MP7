@@ -45,8 +45,5 @@ public class FileToArt {
 		} catch(IOException exception){
 			System.out.println(exception);
 		}
-		
-		Graphics g = image.getGraphics();
-		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 	}
 }
